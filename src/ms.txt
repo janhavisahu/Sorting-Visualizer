@@ -1,0 +1,183 @@
+import React, { useState } from "react";
+import InsertChartIcon from "@material-ui/icons/InsertChart";
+import { Button, MenuItem, Select, Slider } from "@material-ui/core";
+import "./front.css";
+import {
+  shuffle_array,
+  change,
+  sort,
+  m,
+  j,
+  check,
+  selectionSort,
+  insertionSort,
+  quickSort,
+} from "./Function";
+import { mergesort } from "./Merge";
+import { heapSort } from "./Heap";
+const Chart = () => {
+  let mm;
+  const [progress, setProgress] = useState({
+    color: "default",
+    disabled: false,
+  });
+  let [a, setVal] = useState([30, 120, 10, 31, 39, 80, 20, 49, 36, 55]);
+  let filledArray = [
+    "pink",
+    "pink",
+    "pink",
+    "pink",
+    "pink",
+    "pink",
+    "pink",
+    "pink",
+    "pink",
+    "pink",
+  ];
+  let [color, setColor] = useState(filledArray);
+  const [algo, selectAlgo] = useState("heap");
+  function check() {
+    let interval;
+    let val = document.getElementById("speed").value;
+    if (val <= 10) interval = 300;
+    else if (val <= 20) {
+      interval = 200;
+    } else if (val <= 30) interval = 100;
+    else if (val <= 40) {
+      interval = 50;
+    } else {
+      interval = 25;
+    }
+    document.getElementById("button").innerText = "stop!";
+    document.getElementById("size").disabled = "true";
+    document.getElementById("speed").disabled = "true";
+    setProgress({ color: "secondary", disabled: true });
+    if (algo === "bubble")
+      mm = setInterval(() => {
+        sort(a, color, setVal, setColor, setProgress, mm);
+      }, interval);
+    else if (algo === "selection") {
+      mm = setInterval(() => {
+        selectionSort(a, color, setVal, setColor, setProgress, mm);
+      }, interval);
+    } else if (algo === "insertion") {
+      mm = setInterval(() => {
+        insertionSort(a, color, setVal, setColor, setProgress, mm);
+      }, interval);
+    } else if (algo === "quick") {
+      mm = setInterval(() => {
+        quickSort(a, color, setVal, setColor, setProgress, mm);
+      }, interval);
+    } else if (algo === "merge") {
+      mm = setInterval(() => {
+        mergesort(a, color, setVal, setColor, setProgress, mm);
+      }, interval);
+    } else {
+      mm = setInterval(() => {
+        heapSort(a, color, setVal, setColor, setProgress, mm);
+      }, interval);
+      console.log("started");
+    }
+  }
+  function chooseAlgo(event) {
+    selectAlgo(event.target.value);
+    console.log(algo);
+  }
+  return (
+    <>
+      <div className="navBar">
+        <div className="head">
+          <InsertChartIcon
+            style={{ fontSize: "60px", background: "none", marginLeft: "20px" }}
+          />
+          <p>Sorting Visualizer</p>
+        </div>
+        <div className="content">
+          <Button
+            variant="contained"
+            id="shuffle"
+            color="default"
+            style={{
+              marginTop: "5px",
+              marginLeft: "110px",
+              textTransform: "none",
+            }}
+            onClick={() => {
+              shuffle_array([...a], setVal);
+            }}
+            disabled={progress.disabled}
+          >
+            {" "}
+            Shuffle Array
+          </Button>
+          <div className="slider">
+            <p>Set Array Length</p>
+            <input
+              type="range"
+              id="size"
+              defaultValue="10"
+              min="5"
+              max="150"
+              onChange={(event) => change(a, color, setVal, setColor, event)}
+            ></input>
+          </div>
+          <div className="speed_slider">
+            <p>Set Speed</p>
+            <input
+              type="range"
+              id="speed"
+              defaultValue="10"
+              min="1"
+              max="50"
+              style={{ background: "red", color: "#13bba4" }}
+            ></input>
+          </div>
+          <Select
+            style={{ width: "130px" }}
+            onChange={chooseAlgo}
+            defaultValue="heap"
+          >
+            <MenuItem value="bubble">Bubble Sort</MenuItem>
+            <MenuItem value="insertion">Insertion Sort</MenuItem>
+            <MenuItem value="selection">Selection Sort</MenuItem>
+            <MenuItem value="quick">Quick Sort</MenuItem>
+            <MenuItem value="merge">Merge Sort</MenuItem>
+            <MenuItem value="heap">Heap Sort</MenuItem>
+          </Select>
+        </div>
+        <div>
+          <Button
+            variant="contained"
+            id="button"
+            color={progress.color}
+            onClick={check}
+            style={{
+              marginTop: "15px",
+              marginLeft: "40px",
+              textTransform: "none",
+            }}
+          >
+            {" "}
+            Sort
+          </Button>
+        </div>
+      </div>
+      <div className="main">
+        {a.map((val, i) => (
+          <div
+            id="bars"
+            key={i}
+            style={{
+              margin: "0.1%",
+              height: `${val * 0.5}%`,
+              width: `${1275 / a.length}px`,
+              background: `${color[i]}`,
+              alignSelf: "flex-end",
+            }}
+          ></div>
+        ))}
+      </div>
+    </>
+  );
+};
+export default Chart;
